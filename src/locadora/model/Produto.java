@@ -47,7 +47,7 @@ public class Produto {
 	}
 
 	public void visualizar() {
-		System.out.print("Produto " + id + ", " + nome + ", tipo: " + (tipo == 1 ? "Medicamento" : "Cosmetico")
+		System.out.print("Produto " + id + ", " + nome + ", tipo: " + (tipo == 1 ? "Filme" : "Personagem")
 				+ ", preco: " + +preco + ",");
 
 	}

@@ -1,4 +1,5 @@
 package locadora;
+
 import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Optional;
@@ -6,6 +7,10 @@ import java.util.Scanner;
 
 import locadora.util.Cores;
 
+import locadora.controller.ProdutoController;
+import locadora.model.Filme;
+import locadora.model.Personagem;
+import locadora.model.Produto;
 
 
 public class Menu {
@@ -13,6 +18,13 @@ public class Menu {
 
 		Scanner sc = new Scanner(System.in);
 
+		ProdutoController produtos = new ProdutoController();
+
+		Filme filme = new Filme(produtos.gerarId(), "Age of Empires", 1, 30.0, "Ação");
+		produtos.criarProduto(filme);
+
+		Personagem personagem = new Personagem(produtos.gerarId(), "Floral Age of Empires", 2, 8.0, "Tamanho P");
+		produtos.criarProduto(personagem);
 
 		int opcao;
 		while (true) {
@@ -21,7 +33,7 @@ public class Menu {
 					+ "**************************************************************");
 			System.out.println("                                                              ");
 			System.out.println("                                                              ");
-			System.out.println("                   Locadora D.R.C                             ");
+			System.out.println("                       D.R.C LOCADORA                         ");
 			System.out.println("                                                              ");
 			System.out.println(" ************************************************************ ");
 			System.out.println("                                                              ");
@@ -46,23 +58,25 @@ public class Menu {
 			}
 			// para sair do programa
 			if (opcao == 6) {
-				System.out.print(Cores.TEXT_YELLOW +  Cores.ANSI_BLACK_BACKGROUND + "      ********************** **********************       ");
+				System.out.print(Cores.TEXT_YELLOW + Cores.ANSI_BLACK_BACKGROUND
+						+ "      ********************** **********************       ");
 				System.out.println(
-						
-						Cores.TEXT_YELLOW +  Cores.ANSI_BLACK_BACKGROUND + "\n             Obrigado por usar a Locadora D.R.C!          ");
+
+						Cores.TEXT_YELLOW + Cores.ANSI_BLACK_BACKGROUND
+								+ "\n     OBRIGADO POR ADQUIRIR OS PRODUTOS DA NOSSA LOJA      ");
 				sobre();
 				sc.close();
 				System.exit(0);
 			}
-			String nome, genero, personagem;
-			int id, tipo=0;
+			String nome, Filme, Personagem;
+			int id, tipo = 0;
 			double preco;
 
 			switch (opcao) {
 			case 1: {
 
 				System.out.println("Digite o tipo do Produto\n1 - Filme\n2 - Personagem ");
-				System.out.print("tipo: ");	
+				System.out.print("tipo: ");
 				tipo = sc.nextInt();
 
 				switch (tipo) {
@@ -72,10 +86,10 @@ public class Menu {
 					nome = sc.nextLine();
 					System.out.print("Digite o preço do " + nome + ":");
 					preco = sc.nextFloat();
-					System.out.print("Digite o nome do genero Filme: ");
+					System.out.print("Digite o genero desse Filme: ");
 					sc.skip("\\R");
-					genero = sc.nextLine();
-	
+					Filme = sc.nextLine();
+					produtos.criarProduto(new Filme(produtos.gerarId(), nome, tipo, preco, Filme));
 					break;
 				case 2:
 					System.out.print("Digite o nome do personagem: ");
@@ -83,10 +97,10 @@ public class Menu {
 					nome = sc.nextLine();
 					System.out.print("Digite o preço do " + nome + ":");
 					preco = sc.nextFloat();
-					System.out.print("Digite o tamanho do personagem: ");
+					System.out.print("Digite o tamanho do Personagem: ");
 					sc.skip("\\R");
-					personagem = sc.nextLine();
-					
+					Personagem = sc.nextLine();
+					produtos.criarProduto(new Personagem(produtos.gerarId(), nome, tipo, preco, Personagem));
 					break;
 				}
 				keyPress();
@@ -94,14 +108,14 @@ public class Menu {
 			}
 			case 2: {
 				System.out.println("******************** Lista de Produtos ********************\n");
-				
+				produtos.listarProdutos();
 				keyPress();
 				break;
 			}
 			case 3: {
 				System.out.print("Digite o ID do Produto: ");
 				id = sc.nextInt();
-				
+				produtos.consultarPorId(id);
 				keyPress();
 				break;
 			}
@@ -110,9 +124,10 @@ public class Menu {
 				System.out.println("Digite o ID do Produto: ");
 				id = sc.nextInt();
 
-				
+				Optional<Produto> produto = produtos.buscarNaCollection(id);
 
-				
+				if (produto.isPresent()) {
+					tipo = produto.get().getTipo();
 					System.out.println("Digite o novo nome do Produto: ");
 					sc.skip("\\R");
 					nome = sc.nextLine();
@@ -121,40 +136,45 @@ public class Menu {
 
 					switch (tipo) {
 					case 1:
-						System.out.println("Digite o novo nome do Genérico do Medicamento: ");
+						System.out.println("Digite o novo genero do filme: ");
 						sc.skip("\\R");
-						genero = sc.nextLine();
-					
+						Filme = sc.nextLine();
+
 						break;
+					
 					case 2:
-						System.out.println("Digite a nova fragrância: ");
+						System.out.println("Digite o novo Personagem: ");
 						sc.skip("\\R");
-						personagem = sc.nextLine();
-						
+						Personagem = sc.nextLine();
+								
 						break;
 					default:
 						System.out.println("Tipo de Produto inválido!");
 
 					}
-				} 
-			
+				} else {
+					System.out.println("Produto não encontrado!");
+					keyPress();
+					break;
+				}
+			}
 			case 5: {
 				System.out.println("Digite o ID do Produto: ");
 				id = sc.nextInt();
-				;
+				produtos.deletarProduto(id);
 				keyPress();
 			}
-			
 			}
 		}
+
 	}
 
 	private static void sobre() {
 		System.out.println("     ********************** **********************        ");
 		System.out.println("                      Criado por                          ");
 		System.out.println("                                                          ");
-		System.out.println("                   Douglas Rosolini Correia               ");
-		System.out.println("               https://github.com/douglasrc8              ");
+		System.out.println("                 Douglas Rosolini Correia                 ");
+		System.out.println("              https://github.com/douglasrc8               ");
 		System.out.println("                                                          ");
 		System.out.println("     ********************** **********************        ");
 
@@ -168,5 +188,4 @@ public class Menu {
 			System.out.println("Você pressionou uma tecla diferente de Enter");
 		}
 	}
-
 }
